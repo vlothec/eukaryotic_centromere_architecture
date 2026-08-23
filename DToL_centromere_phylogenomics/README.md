@@ -1,4 +1,4 @@
-# DToL centromere evolution (325 species)
+# DToL centromere phylogenomics (325 species)
 
 Core analyses from the Darwin Tree of Life centromere-evolution study: a
 time-calibrated 325-species eukaryotic phylogeny and, on it, the evolution of
