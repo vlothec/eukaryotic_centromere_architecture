@@ -1,0 +1,132 @@
+#!/bin/bash
+
+set -e
+set -u
+set -o pipefail
+
+export bin_path=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+
+## usage
+usage() {
+    cat <<EOF
+
+    USAGE
+      /path/to/$(basename $0) /path/to/EDTA.gff3
+
+    DESCRIPTION
+      script for rescuing unclassified repeat_regions
+
+      The final ouput - *.reassigned - includes an additional field:
+
+      For those cases in which repeat_regions are successfully reallocated into more meaningful categories,
+      the last column is expanded to keep track of any modification applied.
+      The information included follows this structure: initial_class/final_class/string/query/stepX
+
+       - initial_class is the V3 itself. It should be repeat_region, always
+       - final_class includes the new category and is shown in V3 too
+       - string refers to Classification (the term found in the original EDTA file under that tag)
+       - query is the key term that links the repeat to the new category, if it matches the string
+       - step acts as a reference to the stage in which the reassignment took place
+
+          - Step1: partial match using a manual curated ontology (step1.map)
+            To compose this file, we considered both dfam TE classification (https://www.dfam.org/classification/tree)
+            and the sequence ontology available in EDTA’s rep
+          - Step2: perfect match using step2.map, which was generated parsing the headers of all the libraries used by EDTA
+          - Step3: This is a last attempt of salvaging a few additional repeat regions using some short key terms
+            that were omitted in Step1 to avoid spurious substitutions (step3.map)
+
+      You can also look at the summary of each species: *.stats.sum
+
+EOF
+      exit 0
+}
+
+
+  var_count () {
+    sort ${1} | uniq -c | awk '{$1=$1};1' | sort -k 1,1nr | awk 'BEGIN{OFS="\t"}NF == 2{print $1, $2}'
+  }
+
+  ## remove files in a controlled way
+  test_rm_ith () {
+    counter=0
+    for file in ${1};do
+      if [ -f ${file} ];then
+        counter=$[$counter +1]
+      fi
+    done
+
+    ## test how many files will be treated
+    if [[ $counter -lt 10 ]];then
+      printf "\nCLEAN-UP: $counter files will be rm\n"
+    else
+      printf "Too many args. Aborted!"
+      exit 1
+      ## return 1 might be used too as long as you capture it;i.e., (test_rm_ith) || exit $?
+    fi
+
+    for file in ${1};do
+      if [ -f ${file} ];then
+        rm -I ${file}
+      fi
+    done
+  }
+
+
+  file=${@:$OPTIND:1}
+
+  if [ ! -f "${file}" ]; then
+    usage
+    exit 1
+  fi
+
+  sample=$(echo $file | awk -F/ '{split($NF,sam,"."); print sam[1]}')
+
+  # arrange format
+  # repeat_fragment swap
+  if grep -q "repeat_fragment" ${file}; then
+    repeat_frag_occ=$(grep -c "repeat_fragment" ${file} | awk '{print $1}')
+  else
+    repeat_frag_occ="0"
+  fi
+
+  if [ "${repeat_frag_occ}" -gt 0 ]; then
+    awk 'BEGIN{OFS="\t";OFMT="%f"}{if($0 ~ /repeat_fragment/){gsub("repeat_fragment","repeat_region",$0); print}else{print}}' ${file} > ${sample}_tmp000_
+  else
+    cp -p ${file} ${sample}_tmp000_
+  fi
+
+    awk 'BEGIN {OFS = FS = "\t"}$0 !~ /^#/{if($0 ~ "homology" && $3 == "repeat_region"){split($9,atr,";|="); print $0, tolower(atr[4])"&"tolower(atr[6])}else{print $0, "unaffected"}}' ${sample}_tmp000_ > rescue.tmp.i
+
+    grep 'unaffected' rescue.tmp.i > rescue.tmp.i.step0
+
+    ## initial_class/final_class/string/query/stepX
+    awk 'BEGIN {OFS = FS = "\t"} FNR == NR {arr[$2] = $1; next} n=asorti(arr, sorted) {for (i=1; i<=n; i++) {split(sorted[i],var,"&"); split($NF,cls,"&"); if(index(cls[1],var[2]) > 0 || index(cls[2],var[2]) > 0 && NF == 10) {$NF = $3"/"arr[sorted[i]]"/"$NF"/"var[2]"/step1"; $3 = arr[sorted[i]]; break}}}{print}' <(grep -v '^#' ${bin_path}/step1.map | awk 'BEGIN {OFS = FS = "\t"}{$3 = tolower($3); print $2, $4"&"$3}') <(awk '$NF != "unaffected"' rescue.tmp.i) > rescue.tmp.i.step1
+
+    awk '$3 == "repeat_region"{split($NF,cls,"&"); print cls[1]}' rescue.tmp.i.step1 | var_count - | awk '{print $NF}' > rel.te.i
+    awk '$3 == "repeat_region"{split($NF,cls,"&"); print cls[2]}' rescue.tmp.i.step1 | var_count - | awk '{print $NF}' >> rel.te.i
+
+    awk 'BEGIN {OFS = FS = "\t"} FNR == NR {arr[$2] = $1; next} n=asorti(arr, sorted) {for (i=1; i<=n; i++) {split(sorted[i],var,"&"); split($NF,cls,"&"); if(cls[1] == var[2] || cls[2] == var[2] && NF == 10) {$NF = $3"/"arr[sorted[i]]"/"$NF"/"var[2]"/step2"; $3 = arr[sorted[i]]; break}}}{print}' <(grep -v '^#' ${bin_path}/step2.map | grep -i -f rel.te.i - | awk 'BEGIN {OFS = FS = "\t"}{$3 = tolower($3); print $2, $4"&"$3}') <(awk '$3 == "repeat_region"' rescue.tmp.i.step1) > rescue.tmp.i.step2
+
+    if [ ! -s rescue.tmp.i.step2 ]; then
+      awk '$3 == "repeat_region"' rescue.tmp.i.step1 > rescue.tmp.i.step2
+    fi
+
+    awk 'BEGIN {OFS = FS = "\t"} FNR == NR {arr[$2] = $1; next} n=asorti(arr, sorted) {for (i=1; i<=n; i++) {split(sorted[i],var,"&"); split($NF,cls,"&"); regex = "^"var[2]"[^a-z]|[^a-z]"var[2]"[^a-z]"; if(cls[1] ~ regex || cls[2] ~ regex && NF == 10) {$NF = $3"/"arr[sorted[i]]"/"$NF"/"var[2]"/step3"; $3 = arr[sorted[i]]; break}}}{print}' <(grep -v '^#' ${bin_path}/step3.map | awk 'BEGIN {OFS = FS = "\t"}{$3 = tolower($3); print $2, $4"&"$3}') <(awk '$3 == "repeat_region"' rescue.tmp.i.step2) > rescue.tmp.i.step3
+
+    cat rescue.tmp.i.step0 <(awk '$3 != "repeat_region"' rescue.tmp.i.step1) <(awk '$3 != "repeat_region"' rescue.tmp.i.step2) rescue.tmp.i.step3 \
+      | sort -k 1,1 -k 4,4n > ${file##*/}.reassigned
+
+    # ${bin_path}/repeat_region_rescue_sum_file_.sh "${file##*/}.reassigned" "${sample}_tmp000_"
+
+    if [ "${repeat_frag_occ}" -gt 0 ]; then
+      awk 'BEGIN{OFS="\t";OFMT="%f"}{if($0 ~ /repeat_region/){gsub("repeat_region","repeat_fragment",$0); print}else{print}}' ${file##*/}.reassigned > temp_002_
+      mv temp_002_ ${file##*/}.reassigned
+    fi
+
+    ${bin_path}/repeat_region_rescue_sum_file_.sh "${file##*/}.reassigned" "${file}"
+
+    test_rm_ith "rescue.tmp.i*"
+    test_rm_ith "rel.te.i"
+    test_rm_ith "cls_count_*"
+    test_rm_ith "${sample}_tmp000_"
+

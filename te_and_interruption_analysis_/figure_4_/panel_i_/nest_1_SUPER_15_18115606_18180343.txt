@@ -1,0 +1,20 @@
+# extended nested coordinates (sequence shown in dotplot x axis)
+SUPER_15:18111036-18188183
+
+# start and end coordinates of nested structure
+SUPER_15:18115606-18180343
+
+# per strata coord
+# strata1
+# drGeuUrba1.1_stitched_strata_1.anno
+SUPER_15	18116034	18128647	SUPER_15:18116035..18128647-intact#Gypsy_LTR_retrotransposon/12613/IN/Gypsy_Athila/hmm_5/alone	.	+
+SUPER_15	18132691	18145363	SUPER_15:18132692..18145363-intact#Gypsy_LTR_retrotransposon/12672/IN/Gypsy_Athila/hmm_5/alone	.	-
+SUPER_15	18160515	18173184	SUPER_15:18160516..18173184-intact#Gypsy_LTR_retrotransposon/12669/IN/Gypsy_Athila/hmm_5/nested	.	+
+
+# strata2
+# drGeuUrba1.1_stitched_strata_2.anno
+SUPER_15	16372593	16385237	SUPER_15:16372593..16385237-intact#Gypsy_LTR_retrotransposon/12645/IN/Gypsy_Athila/hmm_5/nested	.	-
+
+# strata3
+# drGeuUrba1.1_stitched_strata_3.anno
+SUPER_15	16298222	16312350	SUPER_15:16298222..16312350-intact#Gypsy_LTR_retrotransposon/14129/IN/Gypsy_Athila/hmm_5/exp/NA  .	+

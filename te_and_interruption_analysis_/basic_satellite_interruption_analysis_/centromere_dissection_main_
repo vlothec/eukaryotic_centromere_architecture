@@ -1,0 +1,123 @@
+#!/bin/bash
+
+set -e
+set -u
+set -o pipefail
+
+bin_path_=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+script_dir="$(cd "$(dirname "$0")" && pwd)"
+
+## load lib
+source ${bin_path_}/wfun_lib.sh
+
+## read arg
+## default values
+min_gap_length_=250
+max_gap_length_=100000
+
+while getopts "a:r:t:i:f:k:m:x:n:c:" opt; do
+  case "$opt" in
+    a) arrays_file_="$OPTARG" ;;
+    r) repeats_file_="$OPTARG" ;;
+    t) TEanno_file_="$OPTARG" ;;
+    i) intact_file_="$OPTARG" ;;
+    f) filter_comb_="$OPTARG" ;;
+    k) karyo_file_="$OPTARG" ;;
+    m) min_gap_length_="$OPTARG" ;;
+    x) max_gap_length_="$OPTARG" ;;
+    n) root_name_="$OPTARG" ;;
+    c) cent_fam_="$OPTARG" ;;
+    *) echo "Usage: $0 [-a file] [-r file] [-t file] [-i file] [-f string] [-k file] [-m val] [-x val] [-n string] [-c string]" >&2; exit 1 ;;
+  esac
+done
+
+# Validate required args
+if [[ -z "$repeats_file_" ]]; then
+  echo "Error: -r is required" >&2
+  exit 1
+fi
+
+if [[ -z "$TEanno_file_" ]]; then
+  echo "Error: -t is required" >&2
+  exit 1
+fi
+
+if [[ -z "$intact_file_" ]]; then
+  echo "Error: -i is required" >&2
+  exit 1
+fi
+
+if [[ -z "$karyo_file_" ]]; then
+  echo "Error: -k is required" >&2
+  exit 1
+fi
+
+if [[ -z "$root_name_" ]]; then
+  root_name_=$(echo $repeats_file_ | awk -F/ '{gsub("\\..*","",$NF);print $NF}')
+fi
+
+if [[ -z "$cent_fam_" ]]; then
+  cent_fam_="all"
+fi
+
+
+main_pwd_=$PWD
+if [[ ! -d "$PWD/${root_name_}_gap_landscape_/" ]]; then
+  mkdir $PWD/${root_name_}_gap_landscape_/
+  cd $PWD/${root_name_}_gap_landscape_/
+else
+  cd $PWD/${root_name_}_gap_landscape_/
+fi
+
+
+# generate *_arrays_expanded.csv if not provided
+if [[ -z "$arrays_file_" ]]; then
+  Rscript ${bin_path_}/00_custom_array_files_.R "--bin_path_=$bin_path_" "--repeats_file_=$repeats_file_" "--centromere_class_names_file_=$centromere_class_names_file_" "--max_gap_length_=$max_gap_length_"
+fi
+
+# infer gap coordinates from *_arrays_expanded.csv and *_repeats_filtered.csv
+printf "\n\n### 01_infer_gap_coordinates_.R\n"
+Rscript ${bin_path_}/01_infer_gap_coordinates_.R "--bin_path_=$bin_path_" "--arrays_file_=$arrays_file_" "--repeats_file_=$repeats_file_" "--min_gap_length_=$min_gap_length_" "--max_gap_length_=$max_gap_length_" "--filter_comb_=$filter_comb_" || { echo "01_infer_gap_coordinates_.R crashed!"; exit 1; }
+
+gap_coordinates_file_="${root_name_}_gap_coordinates_.tsv"
+gap_coordinates_all_file_="${root_name_}_gap_coordinates_all_.tsv"
+# intersect gap coordinates and the split_filtered_reassigned TE annotation
+printf "\n\n### 02_gap_coordinates_isec_with_TEanno_.sh\n"
+${bin_path_}/02_gap_coordinates_isec_with_TEanno_.sh $gap_coordinates_file_ $TEanno_file_ $root_name_ $filter_comb_ || { echo "02_gap_coordinates_isec_with_TEanno_.sh crashed!"; exit 1; }
+
+TEanno_isec_gaps_file_="${root_name_}_TEanno_isec_gaps_"
+# get proportion of mapped TEs per gap
+printf "\n\n### 03_TEanno_prop_within_gaps_.R\n"
+Rscript ${bin_path_}/03_TEanno_prop_within_gaps_.R "--bin_path_=$bin_path_" "--TEanno_isec_gaps_file_=$TEanno_isec_gaps_file_" || { echo "03_TEanno_prop_within_gaps_.R crashed!"; exit 1; }
+
+# get non-centromeric-class monomer space
+printf "\n\n### 04_non_cent_family_repeats_data_.R\n"
+Rscript ${bin_path_}/04_non_cent_family_repeats_data_.R "--bin_path_=$bin_path_" "--arrays_file_=$arrays_file_" "--repeats_file_=$repeats_file_" "--min_gap_length_=$min_gap_length_" "--max_gap_length_=$max_gap_length_" "--filter_comb_=$filter_comb_" || { echo "04_non_cent_family_repeats_data_.R crashed!"; exit 1; }
+
+TEanno_isec_gaps_parsed_file_="${root_name_}_TEanno_isec_gaps_parsed_"
+non_cent_family_repeats_data_file_="${root_name_}_non_cent_family_repeats_data_"
+touch ${root_name_}_non_cent_family_repeats_data_
+# get proportion of different features at different levels GW
+printf "\n\n### 05_centromere_dissection_gw_.R\n"
+Rscript ${bin_path_}/05_centromere_dissection_gw_.R "--bin_path_=$bin_path_" "--arrays_file_=$arrays_file_" "--TEanno_isec_gaps_parsed_file_=$TEanno_isec_gaps_parsed_file_" "--gap_coordinates_file_=$gap_coordinates_file_" "--non_cent_family_repeats_data_file_=$non_cent_family_repeats_data_file_" "--karyo_file_=$karyo_file_" "--min_gap_length_=$min_gap_length_" "--max_gap_length_=$max_gap_length_" "--filter_comb_=$filter_comb_" || { echo "05_centromere_dissection_gw_.R crashed!"; exit 1; }
+
+# get proportion of different features at different levels seqID
+printf "\n\n### 06_centromere_dissection_seqID_.R\n"
+Rscript ${bin_path_}/06_centromere_dissection_seqID_.R "--bin_path_=$bin_path_" "--arrays_file_=$arrays_file_" "--TEanno_isec_gaps_parsed_file_=$TEanno_isec_gaps_parsed_file_" "--gap_coordinates_file_=$gap_coordinates_file_" "--non_cent_family_repeats_data_file_=$non_cent_family_repeats_data_file_" "--karyo_file_=$karyo_file_" "--min_gap_length_=$min_gap_length_" "--max_gap_length_=$max_gap_length_" "--filter_comb_=$filter_comb_" || { echo "06_centromere_dissection_seqID_.R crashed!"; exit 1; }
+
+centromere_dissection_data_gw_file_="${root_name_}_centromere_dissection_data_gw_"
+centromere_dissection_data_seqID_file_="${root_name_}_centromere_dissection_data_seqID_"
+# summary plots for proportion of different features at different levels GW and seqID
+printf "\n\n### 07_summary_plot_centromere_dissection_.R\n"
+Rscript ${bin_path_}/07_updated_summary_plot_centromere_dissection_.R "--bin_path_=$bin_path_" "--arrays_file_=$arrays_file_" "--TEanno_file_=$TEanno_file_" "--intact_file_=$intact_file_" "--karyo_file_=$karyo_file_" "--gap_coordinates_file_=$gap_coordinates_file_" "--gap_coordinates_all_file_=$gap_coordinates_all_file_" "--centromere_dissection_data_gw_file_=$centromere_dissection_data_gw_file_" "--centromere_dissection_data_seqID_file_=$centromere_dissection_data_seqID_file_" "--filter_comb_=$filter_comb_" || { echo "07_summary_plot_centromere_dissection_.R crashed!"; exit 1; }
+
+mv ${root_name_}_centromere_dissection_data_gw_ ${root_name_}_fam_${cent_fam_}_centromere_dissection_data_gw_
+mv ${root_name_}_centromere_dissection_data_seqID_ ${root_name_}_fam_${cent_fam_}_centromere_dissection_data_seqID_
+mv new_layout_${root_name_}_centromere_dissection_overview_.pdf new_layout_${root_name_}_fam_${cent_fam_}_centromere_dissection_overview_.pdf
+mv ${root_name_}_gap_coordinates_all_.tsv ${root_name_}_fam_${cent_fam_}_gap_coordinates_all_.tsv
+mv ${root_name_}_gap_coordinates_sum_.tsv ${root_name_}_fam_${cent_fam_}_gap_coordinates_sum_.tsv
+mv ${root_name_}_gap_coordinates_.tsv ${root_name_}_fam_${cent_fam_}_gap_coordinates_.tsv
+mv ${root_name_}_non_cent_family_repeats_data_ ${root_name_}_fam_${cent_fam_}_non_cent_family_repeats_data_
+mv ${root_name_}_TEanno_isec_gaps_ ${root_name_}_fam_${cent_fam_}_TEanno_isec_gaps_
+mv ${root_name_}_TEanno_isec_gaps_parsed_ ${root_name_}_fam_${cent_fam_}_TEanno_isec_gaps_parsed_
+mv TEanno_overlap_within_gaps_ ${root_name_}_fam_${cent_fam_}_TEanno_overlap_within_gaps_
