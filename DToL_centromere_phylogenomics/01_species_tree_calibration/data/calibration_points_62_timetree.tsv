@@ -1,0 +1,63 @@
+Clade	Node	Taxon_A	Taxon_B	Constraint_min_Mya	Constraint_max_Mya	Calibrated_age_Mya	TimeTree_median_Mya	TimeTree_adjusted_Mya	TimeTree_range_low	TimeTree_range_high	Source
+Root	Eukaryota root	Eimeria tenella	Taurulus bubalis	1085	1671	1474.61	1530	1598.44	1085	1671	TimeTree
+Opisthokonta	Opisthokonta	Membranipora membranacea	Agaricus bisporus	985	1392	1274.92	1274.57	1274.57	985	1392	TimeTree
+Metazoa	Falco	Falco peregrinus	Falco cherrug	1.66	2.78	2.11	2.14	2.13	1.66	2.78	TimeTree
+Metazoa	Thunnus	Thunnus albacares	Thunnus maccoyii	3.41	4.29	4.05	3.85	3.71	3.41	4.29	TimeTree
+Metazoa	Patella	Patella vulgata	Patella pellucida	7.2	10.8	9.33	9		0	0	TimeTree
+Metazoa	Tridacna	Tridacna crocea	Tridacna gigas	17.05	147.15	46.83	82.1	51.6	17.05	147.15	TimeTree
+Metazoa	Polyneoptera	Leuctra nigra	Ectobius pallidus	25	370.6	332.74	270.35	308.09	25	370.6	TimeTree
+Metazoa	Lagopus/Gallus	Lagopus muta	Gallus gallus	27.91	42.4	28.31	32.78	35.84	27.91	42.4	TimeTree
+Metazoa	Taeniopygia/Corvus	Taeniopygia guttata	Corvus hawaiiensis	30.4	45.6	31.08	38	16.04	0	38	TimeTree
+Metazoa	Leistus/Pterostichus	Leistus spinibarbis	Pterostichus madidus	36.56	54.85	46.38	45.71	101.67	0	0	TimeTree
+Metazoa	Phorcus/Steromphala	Phorcus lineatus	Steromphala cineraria	60.79	91.18	71.85	75.99	46.72	0	0	TimeTree
+Metazoa	Porphyrio/Lagopus	Porphyrio hochstetteri	Lagopus muta	86.5	101.8	93.33	90.84		86.5	101.8	TimeTree
+Metazoa	Apidae	Bombus hypnorum	Nomada fabriciana	98.45	112.01	100.6	108.01	108.01	98.45	112.01	TimeTree
+Metazoa	Otophysi	Danio rerio	Pangasianodon hypophthalmus	131.97	169.97	147.08	142.11		131.97	169.97	TimeTree
+Metazoa	Avemetatarsalia/Ornithodira node	Micropterix aruncella	Atherix ibis	151.94	344.7	316.52	286.14	299.39	151.94	344.7	TimeTree
+Metazoa	Amphiesmenoptera	Pieris napi	Limnephilus lunatus	172.28	302.41	203.33	246.4	246.4	172.28	302.41	TimeTree
+Metazoa	Paraneoptera	Icerya purchasi	Mesopsocus fuscifrons	172.58	416.6	297.71	353.08		172.58	416.6	TimeTree
+Metazoa	Coleoptera	Chrysolina oricalcia	Ophonus ardosiacus	189.63	307.19	298.1	279.58	282.37	189.63	307.19	TimeTree
+Metazoa	Aculeata/Tipuloidea node	Abia candens	Tiphia femorata	223.72	303.97	254.58	239.53	264.82	223.72	303.97	TimeTree
+Metazoa	Sauria	Lagopus muta	Vipera latastei	274.9	286.76	286.67	279.83		274.9	286.76	TimeTree
+Metazoa	Endopterygota	Anoplius nigerrimus	Leistus spinibarbis	310.7	389.69	342.3	344		310.7	389.69	TimeTree
+Metazoa	Amniota	Diceros bicornis	Lagopus muta	316	322.37	321.31	318.95		316	322.37	TimeTree
+Metazoa	Palaeoptera	Siphlonurus alternatus	Ischnura elegans	325.78	430.63	337.4	365.53		325.78	430.63	TimeTree
+Metazoa	Actinopteri	Acipenser ruthenus	Thunnus maccoyii	333.37	372	341.9	349.94		333.37	372	TimeTree
+Metazoa	Neoptera	Leuctra nigra	Nephrotoma flavescens	346.52	391.78	372.22	383.15		346.52	391.78	TimeTree
+Metazoa	Pterygota	Nephrotoma flavescens	Ischnura elegans	377.37	441.6	386.21	400.98		377.37	441.6	TimeTree
+Metazoa	Gastropoda	Steromphala cineraria	Patella pellucida	379.74	500	471.09	421.6	476.34	379.74	500	TimeTree
+Metazoa	Euteleostomi	Acipenser ruthenus	Falco cherrug	423.25	440	436.53	429		423.25	440	TimeTree
+Metazoa	Hexapoda	Nephrotoma flavescens	Orchesella flavescens	425.44	478.09	433.47	459.04	459.04	425.44	478.09	TimeTree
+Metazoa	Arthropoda	Nephrotoma flavescens	Meta bourneti	536.61	600	566.39	547.56	563.31	536.61	600	TimeTree
+Metazoa	Protostomia	Membranipora membranacea	Nephrotoma flavescens	543	670.09	653.04	610	691.52	543	670.09	TimeTree
+Metazoa	Bilateria	Marthasterias glacialis	Nephrotoma flavescens	627	830	700.33	686.16	707.6	627	830	TimeTree
+Metazoa	Metazoa	Nephrotoma flavescens	Sycon ciliatum	701.85	1020	871.32	758.11		701.85	1020	TimeTree
+Viridiplantae	Arabidopsis	Arabidopsis thaliana	Cardamine hirsuta	5.94	29.23	15.43	17.1	18.39	5.94	29.23	TimeTree
+Viridiplantae	Geum	Geum rivale	Geum urbanum	10.34	15.52	12.87	12.93		0	0	TimeTree
+Viridiplantae	Potamogetonaceae/Droseraceae	Rosa canina	Potentilla anserina	21.12	57.76	53.46	27.15	39.51	21.12	57.76	TimeTree
+Viridiplantae	Hologalegina	Trifolium fragiferum	Astragalus glycyphyllos	27.78	44.25	28.12	35.18	34.24	27.78	44.25	TimeTree
+Viridiplantae	Cyperaceae clade	Schoenoplectus triqueter	Carex depauperata	29.92	59.61	45.69	50.68		29.92	59.61	TimeTree
+Viridiplantae	Asteraceae node	Tanacetum vulgare	Arctium minus	36.62	45.14	37.11	39.06	42.39	36.62	45.14	TimeTree
+Viridiplantae	Poaceae/Asteraceae node	Phragmites australis	Hierochloe odorata	41.44	51.9	43.21	49.13	59.13	41.44	51.9	TimeTree
+Viridiplantae	Juncaceae	Luzula sylvatica	Juncus squarrosus	44.34	69.59	52.39	54.59	65.65	44.34	69.59	TimeTree
+Viridiplantae	Rhynchostegium/Thuidium (moss)	Rhynchostegium confertum	Thuidium tamariscinum	48.81	94.59	53.82	71.7	79.03	48.81	94.59	TimeTree
+Viridiplantae	Rosales	Geum urbanum	Urtica urens	76	95.47	85.42	87.63		76	95.47	TimeTree
+Viridiplantae	Caryophyllales	Polygonum aviculare	Arenaria serpyllifolia	81.32	97	83.14	86.13	106.27	81.32	97	TimeTree
+Viridiplantae	Poales	Sparganium emersum	Juncus squarrosus	94.08	117	97.13	106	110.08	94.08	117	TimeTree
+Viridiplantae	Pentapetalae	Geum urbanum	Polygonum aviculare	111.37	123.93	112.32	118.05	125.12	111.37	123.93	TimeTree
+Viridiplantae	Alismatales/Poales node	Potamogeton natans	Juncus squarrosus	125.28	137.9	131.66	132.37	138.76	125.28	137.9	TimeTree
+Viridiplantae	Fabales/Caryophyllales node	Trifolium fragiferum	Berberis vulgaris	126.01	132.41	128.47	129.33	142.17	126.01	132.41	TimeTree
+Viridiplantae	Caryophyllales/Poales node	Polygonum aviculare	Juncus squarrosus	142.06	163.46	160.48	159.61	159.61	142.06	163.46	TimeTree
+Viridiplantae	Moss node	Polytrichastrum sexangulare	Rhynchostegium confertum	181.26	354.85	287.87	213.87	230.39	181.26	354.85	TimeTree
+Viridiplantae	Liverwort node	Herbertus hutchinsiae	Lunularia cruciata	304.84	437.86	329.5	374.22	376.38	304.84	437.86	TimeTree
+Viridiplantae	Embryophyta	Herbertus hutchinsiae	Rosa canina	460	497.29	476.34	479.8	483.72	460	497.29	TimeTree
+Viridiplantae	Chlorophyceae	Dunaliella primolecta	Marvania coccoides	662.02	1000	761.17	827.5		662.02	1000	TimeTree
+Viridiplantae	Viridiplantae	Rosa canina	Pycnococcus provasolii	729	1105.66	1059.56	936.3	991.82	729	1105.66	TimeTree
+Fungi	Panellus Mycena	Mycena galericulata	Panellus stipticus	2.12	13.69	10.14	7.91	4	2.12	13.69	TimeTree
+Fungi	Agaricus Chlorophyllum	Chlorophyllum brunneum	Agaricus bisporus	46.38	73.27	59.36	59.82	59.03	46.38	73.27	TimeTree
+Fungi	Clavariaceae	Ramariopsis corniculata	Clavaria fumosa	56.47	69.34	67.98	62.91	62.91	56.47	69.34	TimeTree
+Fungi	Russula Hericium	Hericium erinaceus	Russula vesca	69.04	143.12	85.02	114.16	111.85	69.04	143.12	TimeTree
+Fungi	Platismatia Cladonia	Cladonia squamosa	Platismatia glauca	93.88	146.36	138.27	139.04	124.68	93.88	146.36	TimeTree
+Fungi	Sordariomyceta	Leotia lubrica	Cordyceps fumosorosea	239.73	320	280.84	293.52	320.41	239.73	320	TimeTree
+Fungi	Saccharomyceta	Metschnikowia zobellii	Platismatia glauca	437.81	670.19	555.07	533.61	523.45	437.81	670.19	TimeTree
+Fungi	Dikarya	Agaricus bisporus	Platismatia glauca	583.17	749	612.9	642.03		583.17	749	TimeTree

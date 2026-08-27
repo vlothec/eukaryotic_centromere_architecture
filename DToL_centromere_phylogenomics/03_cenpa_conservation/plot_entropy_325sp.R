@@ -155,7 +155,7 @@ p_d_split <- ggplot(se_pg, aes(x = pos)) +
   ) +
   scale_colour_manual(
     values = histone_pal,
-    labels = c(CENPA = "CENP-A (n=418)", H3 = "H3-like (n=901)"),
+    labels = c(CENPA = "CENP-A (n=422)", H3 = "H3-like (n=897)"),
     name   = NULL
   ) +
   scale_x_continuous(name = "Alignment position (per-group mask, gap <= 85%)") +
