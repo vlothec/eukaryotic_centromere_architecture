@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Split-entropy plots for the bnni tree alignment (420 CenpA vs 907 H3, no archaea).
+Split-entropy plots for the bnni tree alignment (422 CENP-A vs 897 H3, no archaea).
 
 Produces per gap threshold:
   A. split_entropy_bnni_pretty_gap*.{png,pdf}

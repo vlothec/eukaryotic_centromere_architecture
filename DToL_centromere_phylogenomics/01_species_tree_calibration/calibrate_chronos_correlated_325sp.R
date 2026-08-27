@@ -1,14 +1,17 @@
 #!/usr/bin/env Rscript
 # calibrate_chronos_correlated_325sp.R
-# Re-date the 325-sp FastSpeciesTree with chronos (penalised likelihood,
-# lambda=1, correlated) using a constraints TSV (label, tip_a, tip_b, age_min, age_max).
-# Usage: Rscript calibrate_chronos_correlated_325sp.R <constraints.tsv> <out.nwk>
+# Re-date the 325-sp FastSpeciesTree with chronos (penalised likelihood, correlated
+# rates, smoothing lambda=0.1 — the model selected by TimeTree benchmarking) using a
+# constraints TSV (label, tip_a, tip_b, age_min, age_max) of 62 calibration points.
+# Usage: Rscript calibrate_chronos_correlated_325sp.R <constraints.tsv> <out.nwk> [model] [lambda]
+# Publication run: Rscript calibrate_chronos_correlated_325sp.R over_calib.tsv \
+#                    outputs/full_325sp_calibrated_correlatedlambda01.nwk correlated 0.1
 suppressPackageStartupMessages({library(ape); library(phytools)})
 args <- commandArgs(trailingOnly=TRUE)
 CONSTR <- if (length(args)>=1) args[1] else "over_calib.tsv"
-OUT    <- if (length(args)>=2) args[2] else "outputs/full_325sp_chronos_over_correlated.nwk"
+OUT    <- if (length(args)>=2) args[2] else "outputs/full_325sp_calibrated_correlatedlambda01.nwk"
 MODEL  <- if (length(args)>=3) args[3] else "correlated"   # chronos model: correlated | relaxed | discrete
-LAMBDA <- if (length(args)>=4) as.numeric(args[4]) else 1   # smoothing parameter lambda
+LAMBDA <- if (length(args)>=4) as.numeric(args[4]) else 0.1 # smoothing parameter (0.1 = selected model)
 
 SP  <- "/home/jg2070/Desktop/dtol_review_August/DToL_phylogenomics_publication_325genomes/01_species_tree"
 CTRL<- chronos.control(iter.max=1e6, eval.max=1e6, dual.iter.max=1e4, tol=1e-8)

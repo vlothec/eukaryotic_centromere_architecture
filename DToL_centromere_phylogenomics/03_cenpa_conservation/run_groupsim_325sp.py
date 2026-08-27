@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Prepare inputs and run GroupSim on the bnni tree alignment,
-comparing CENPA (420 seqs) vs H3-like (907 seqs).
+comparing CENP-A (422 seqs) vs H3-like (897 seqs).
 
 Run from:  PhylogeneticProfiling/
   python3 19_curated_tree/run_groupsim_bnni.py
