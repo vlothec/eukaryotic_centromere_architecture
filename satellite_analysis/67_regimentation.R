@@ -402,11 +402,19 @@ suppressWarnings(suppressPackageStartupMessages(library(GenomicRanges)))
 
 
 
-repeats_files <- list.files(path = "/home/pwlodzimierz/ToL/upload_files/2026_filtered_TRASH", full.names = T)
+repeats_files <- list.files(path = "/home/pwlodzimierz/ToL/upload_files/filtered_repeats_csvs_021126", full.names = T)
 
-satellites <- read.csv("/home/pwlodzimierz/ToL/Metadata/cen_satellite_families_march_2026.csv")
+satellites <- read.csv("/home/pwlodzimierz/ToL/Metadata/cen_satellite_families_Nov_2026.csv")
 metadata <- read.csv("/home/pwlodzimierz/ToL/Metadata/chr.no.and.sizes.full_2025.csv")
 phyla <- read.csv("/home/pwlodzimierz/ToL/Metadata/fasta_phyla.csv")
+
+satellites$fasta <- unlist(lapply(satellites$fasta, function(X) strsplit(X, split = "[.]")[[1]][1]))
+
+satellites <- rbind(satellites, data.frame(Kolumna1 = 264,
+                                           fasta = "GCA_000001405.29_GRCh38.p14_genomic",
+                                           TRASH_new_class = "170_2",
+                                           count_total = 0,
+                                           is_holocentric = FALSE))
 
 metadata <- metadata[metadata$is.chr == 1,]
 

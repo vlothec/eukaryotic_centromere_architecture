@@ -213,7 +213,15 @@ ggsave("species HOR vs regimentation score.pdf", plot = p, width = 5, height = 5
 
 
 ### make df per repeat family
-cen_families <- read.csv("/home/pwlodzimierz/ToL/Metadata/cen_satellite_families_march_2026.csv")
+cen_families <- read.csv("/home/pwlodzimierz/ToL/Metadata/cen_satellite_families_Nov_2026.csv")
+
+cen_families$fasta <- unlist(lapply(cen_families$fasta, function(X) strsplit(X, split = "[.]")[[1]][1]))
+
+cen_families <- rbind(cen_families, data.frame(Kolumna1 = 264,
+                                               fasta = "GCA_000001405.29_GRCh38.p14_genomic",
+                                               TRASH_new_class = "170_2",
+                                               count_total = 0,
+                                               is_holocentric = FALSE))
 
 all_families <- TRUE
 if(all_families) {
@@ -255,17 +263,27 @@ cen_families$fasta <- unlist(lapply(cen_families$fasta, function(X) strsplit(X, 
 #                                                is_holocentric = FALSE ))
 
 # --- Assign background colours per row -------------------------
+
+
+phyla <- read.csv("/home/pwlodzimierz/ToL/Metadata/fasta_phyla.csv")
+
+
+cen_families$phyla <- ""
+for(i in 1 : (nrow(cen_families) - 1)) {
+  cen_families$phyla[i] <- phyla$phyla[grep(cen_families$fasta[i], phyla$fasta)]
+}
+
 cen_families$bg_col <- "#99999990"  # default
-cen_families$bg_col[  1:154] <- "#3f37c990"
-cen_families$bg_col[155:181] <- "#f7258590"
-cen_families$bg_col[182:265] <- "#8ac92690"
-cen_families$bg_col[263] <- "#99999990"
+cen_families$bg_col[cen_families$phyla == "invertebrate"] <- "#3f37c990"
+cen_families$bg_col[cen_families$phyla == "chordate"] <- "#f7258590"
+cen_families$bg_col[cen_families$phyla == "planta"] <- "#8ac92690"
+cen_families$bg_col[nrow(cen_families)] <- "#99999990"
 
 cen_families$order <- 0  # default
-cen_families$order[  1:154] <- 2
-cen_families$order[155:181] <- 3
-cen_families$order[182:265] <- 4
-cen_families$order[263] <- 1
+cen_families$order[cen_families$phyla == "invertebrate"] <- 2
+cen_families$order[cen_families$phyla == "chordate"] <- 3
+cen_families$order[cen_families$phyla == "planta"] <- 4
+cen_families$order[nrow(cen_families)] <- 1
 
 
 
